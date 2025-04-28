@@ -3,5 +3,11 @@ project(ecetype C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(ecetype main.c)
+add_executable(ecetype main.c
+        vaisseau.c
+        vaisseau.h
+        interface.c
+        interface.h
+        enemies.c
+        enemies.h)
 target_link_libraries(ecetype -lmingw32 -lalleg44)

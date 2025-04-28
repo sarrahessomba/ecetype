@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <allegro.h>
-
+#include "vaisseau.h"
 
 void initialisation_allegro();
 
