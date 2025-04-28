@@ -4,3 +4,4 @@ project(ecetype C)
 set(CMAKE_C_STANDARD 11)
 
 add_executable(ecetype main.c)
+target_link_libraries(ecetype -lmingw32 -lalleg44)
