@@ -31,5 +31,8 @@ typedef struct tir {
     int ty;
     BITMAP* tir_bmp;
 }t_tir;
+//sous programmes
+void deplacement_vaisseau(t_vaisseau *vaisseau, int *tir_validee, int *cptimg, int *img_courante, int tmpimg);
 
+void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir);
 #endif //VAISSEAU_H
