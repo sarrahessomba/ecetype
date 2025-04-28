@@ -4,9 +4,6 @@
 
 void initialisation_allegro();
 
-
-
-
 int main(void)
 {
     initialisation_allegro();
@@ -14,7 +11,7 @@ int main(void)
     printf("Test commit");
     allegro_exit();
     return 0;
-}
+}END_OF_MAIN();
 
 
 
