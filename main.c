@@ -10,7 +10,7 @@ void initialisation_allegro();
 int main(void)
 {
     initialisation_allegro();
-    printf("Test github\n");
+    printf("Test github local\n");
     printf("Test commit");
     allegro_exit();
     return 0;
