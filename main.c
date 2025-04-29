@@ -12,11 +12,10 @@ int main(void)
 int tir_validee=0;
     t_vaisseau vaisseau;
     t_tir tir;
+    BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION];
     //init du vaisseau et tir
-    initialisation_vaisseau_tir(&vaisseau,&tir);
-    //variables pour collision avec le decor
-    int x_img=0;
-    int y_img=0;
+    initialisation_vaisseau_tir(&vaisseau,&tir,explosion_sprites);
+
     BITMAP* buffer = create_bitmap(SCREEN_W, SCREEN_H);
     BITMAP* fond_jeu_collision =load_bitmap("fond jeu.bmp", NULL);
 
@@ -31,31 +30,22 @@ int tir_validee=0;
     }
     int cptimg=0, tmpimg=4;
     int img_courante=0;
-    int px; // position x enregistre lorsque le tir est confirme
-    int py;// position yz enregistre lorsque le tir est confirme
-    //
-    int cpt=0;
-    int tmp=6;
+
+
+
+    // varibles concernatn l'animation de l'explosion
+    int cptimg_ex=0, tmpimg_ex=10;
+    int img_courante_ex=0;
+
     //
     while (!key[KEY_ESC]) {
 
         stretch_blit(fond_jeu_normal,buffer,0,0,fond_jeu_normal->w,fond_jeu_normal->h,0,0,SCREEN_W,SCREEN_H);
         stretch_sprite(buffer,vaisseau.vaisseau_bmp[img_courante],vaisseau.x,vaisseau.y,vaisseau.tx,vaisseau.ty);
-
-
-
-
-        deplacement_vaisseau(&vaisseau,&tir_validee,&cptimg,&img_courante,tmpimg);
-
-
-
         //
-        x_img=(vaisseau.x*fond_jeu_collision->w)/(SCREEN_W); //coordonees x sur le decor
-        y_img=((vaisseau.y )*(fond_jeu_collision->h +16))/(SCREEN_H);//coordonees y sur le decor
-        putpixel(buffer,vaisseau.x +16,vaisseau.y+33,makecol(255,255,255));
-        if(getpixel(fond_jeu_collision,x_img,y_img)==makecol(255,255,255) ){//|| getpixel(fond_jeu_collision,vaisseau.x + vaisseau.tx,vaisseau.y + vaisseau.ty)==makecol(255,255,255) || getpixel(fond_jeu_collision,vaisseau.x + vaisseau.tx,vaisseau.y )==makecol(255,255,255) || getpixel(fond_jeu_collision,vaisseau.x ,vaisseau.y + vaisseau.ty)==makecol(255,255,255)) {
-            printf("touched\n");
-        }
+        deplacement_vaisseau(&vaisseau,&tir_validee,&cptimg,&img_courante,tmpimg);
+        //
+       collision_vaisseau_decor(&vaisseau,fond_jeu_collision,&cptimg_ex,tmpimg_ex,&img_courante_ex,explosion_sprites,buffer);
 
         if (tir_validee) {
             stretch_sprite(buffer,tir.tir_bmp,tir.x,tir.y,tir.tx,tir.ty);
@@ -67,7 +57,8 @@ int tir_validee=0;
             }
         }
 
-        blit(buffer,screen,0,0,0,0,SCREEN_W,SCREEN_H);
+
+        stretch_blit(buffer,screen,0,0,buffer->w,buffer->h,0,0,SCREEN_W,560);
         rest(16); // Pour éviter d'utiliser 100% du CPU (~60 fps)
     }
 

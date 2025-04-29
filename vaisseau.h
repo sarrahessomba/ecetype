@@ -6,7 +6,7 @@
 #define VAISSEAU_H
 #include <allegro.h>
 #define  NB_SPRITES_VAISSEAU 7
-
+#define NB_SPRITES_EXPLOSION 5
 typedef struct t_vaisseau {
 
     int etat;//a gagné ou pas
@@ -34,5 +34,8 @@ typedef struct tir {
 //sous programmes
 void deplacement_vaisseau(t_vaisseau *vaisseau, int *tir_validee, int *cptimg, int *img_courante, int tmpimg);
 
-void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir);
+void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir,BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION]);
+
+void collision_vaisseau_decor(t_vaisseau* vaisseau,BITMAP* fond_jeu_collision,  int* cptimg_ex, int tmpimg_ex,int* img_courante_ex,BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION],BITMAP* buffer);
+//void collision_vaisseau_decor(t_vaisseau vaisseau,BITMAP* fond_jeu_collision);
 #endif //VAISSEAU_H
