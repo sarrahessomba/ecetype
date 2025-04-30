@@ -1,7 +1,3 @@
-//
-// Created by sarra on 4/28/2025.
-//
-
 #ifndef VAISSEAU_H
 #define VAISSEAU_H
 #include <allegro.h>
