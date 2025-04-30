@@ -6,8 +6,8 @@
 //sous programmes concernat le vaisseau
 #include <stdio.h>
 
-
-void deplacement_vaisseau(t_vaisseau *vaisseau, int *tir_validee, int *cptimg, int *img_courante, int tmpimg) {
+//PERMET DE GERER LE DEPLACEMENT DU VAISSEAU AINSI QUE LES SPRITES CONCERNES
+void deplacement_vaisseau(t_vaisseau *vaisseau, int *cptimg, int *img_courante, int tmpimg) {
     if(key[KEY_RIGHT]) {
 
       if(*img_courante!=0) {
@@ -87,6 +87,8 @@ void deplacement_vaisseau(t_vaisseau *vaisseau, int *tir_validee, int *cptimg, i
 
 
 }
+
+//INITIALISE LES DONNES DU VAISSEAU , DES TIRS , ET CHARGE TOUTE LES SPRITES
 void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir, BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION] ) {
 
     // Chargement des sprites bitmap DU VAISSEAU
@@ -100,6 +102,9 @@ void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir, BITMAP* explos
             exit(EXIT_FAILURE);
         }
     }
+
+
+    // Chargement des sprites d explosion
     char nomfichier2[100];
     for (int i=0;i<NB_SPRITES_EXPLOSION;i++) {
         // sprintf permet de faire un printf dans une chaine
@@ -125,6 +130,12 @@ void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir, BITMAP* explos
             allegro_message("pas pu trouver %s",nomfichier3);
         }
     }
+
+    //Chargement du son du tir
+    tir->son_tir=load_sample("son_tir.wav");
+    if (!tir->son_tir) {
+        allegro_message("erreur  chargement de son_tir.wav");
+    }
 //chargement de l'explosion du vaisseau en cas de collision (avec le decor ou un enemi)
 
     // Initialisation des donnes du vaisseau
@@ -144,7 +155,6 @@ void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir, BITMAP* explos
     tir->ty=15;
     // init des variables pour animation
     tir->cptimg=0;
-    tir->tmpimg=200;
     tir->img_courante=0;
 
 };
@@ -156,6 +166,7 @@ int  calcul_coordonees_y(int y,BITMAP* bmp) {//recoit le x du screen et le conve
     int nouveau_y=(y*bmp->h)/(SCREEN_H);
     return nouveau_y;
 };
+// lANCE L'ANIMATION DE L'EXPLOSION
 int explosion_animation(t_vaisseau vaisseau, int* cptimg, int* imgcourante,int tmpimg,BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION],BITMAP* buffer) { // lance l'animation de l'explosion
 int fini=0;
     (*cptimg)++;
@@ -171,6 +182,8 @@ int fini=0;
     stretch_sprite(buffer,explosion_sprites[*imgcourante],vaisseau.x-10,vaisseau.y,2*explosion_sprites[*imgcourante]->w,2*explosion_sprites[*imgcourante]->h);
 return fini;
 }
+
+//DETECTE LA COLLISION ENTRE VAISSEAU ET DECOR
 void collision_vaisseau_decor(t_vaisseau* vaisseau,BITMAP* fond_jeu_collision,  int* cptimg_ex, int tmpimg_ex,int* img_courante_ex,BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION],BITMAP* buffer,int* imgcourante) {
 
 
@@ -195,16 +208,3 @@ void collision_vaisseau_decor(t_vaisseau* vaisseau,BITMAP* fond_jeu_collision,  
 
 }
 
-/*
-* void collision_vaisseau_decor(t_vaisseau vaisseau,BITMAP* fond_jeu_collision) {
-
-    // varibles concernatn l'animation de l'explosion
-    int cptimg_ex=0, tmpimg_ex=4;
-    int img_courante_ex=0;
-
-    if(getpixel(fond_jeu_collision,calcul_coordonees_x(vaisseau.x,fond_jeu_collision),calcul_coordonees_y(vaisseau.y,fond_jeu_collision))==makecol(255,255,255) || getpixel(fond_jeu_collision,calcul_coordonees_x((vaisseau.x + vaisseau.tx),fond_jeu_collision),calcul_coordonees_y(vaisseau.y + vaisseau.ty,fond_jeu_collision))==makecol(255,255,255) || getpixel(fond_jeu_collision,calcul_coordonees_x(vaisseau.x + vaisseau.tx,fond_jeu_collision),calcul_coordonees_y(vaisseau.y,fond_jeu_collision))==makecol(255,255,255) || getpixel(fond_jeu_collision,calcul_coordonees_x(vaisseau.x,fond_jeu_collision),calcul_coordonees_y(vaisseau.y + vaisseau.ty,fond_jeu_collision))==makecol(255,255,255)){//|| vaisseau.y + vaisseau.ty>=454) {// 454 pour l'instant le temps que je refelchisse prq ca marche pas
-        printf("touched\n");
-    }
-
-}
- */

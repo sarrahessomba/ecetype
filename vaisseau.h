@@ -37,10 +37,11 @@ typedef struct tir {
     int cptimg;
     int img_courante;
     //son tir
+    SAMPLE* son_tir;
 
 }t_tir;
 //sous programmes
-void deplacement_vaisseau(t_vaisseau *vaisseau, int *tir_validee, int *cptimg, int *img_courante, int tmpimg);
+void deplacement_vaisseau(t_vaisseau *vaisseau, int *cptimg, int *img_courante, int tmpimg);
 
 void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir,BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION]);
 
