@@ -9,12 +9,39 @@
 
 void deplacement_vaisseau(t_vaisseau *vaisseau, int *tir_validee, int *cptimg, int *img_courante, int tmpimg) {
     if(key[KEY_RIGHT]) {
+
+      if(*img_courante!=0) {
+          if(*img_courante<=(NB_SPRITES_VAISSEAU-1)/2) {
+              (*img_courante)--;
+              if(*img_courante<=0) {
+                  *img_courante=0;
+              }
+          }else {
+              (*img_courante)--;
+              if(*img_courante<=NB_SPRITES_VAISSEAU-(NB_SPRITES_VAISSEAU-1)/2) {
+                  *img_courante=0;
+              }
+          }
+      }
         vaisseau->x += vaisseau->dx;
         if(vaisseau->x + vaisseau->tx > SCREEN_W) {
             vaisseau->x = SCREEN_W -vaisseau->tx;
         }
     }
     else if(key[KEY_LEFT]) {
+        if(*img_courante!=0) {
+            if(*img_courante<=(NB_SPRITES_VAISSEAU-1)/2) {
+                (*img_courante)--;
+                if(*img_courante<=0) {
+                    *img_courante=0;
+                }
+            }else {
+                (*img_courante)--;
+                if(*img_courante<=NB_SPRITES_VAISSEAU-(NB_SPRITES_VAISSEAU-1)/2) {
+                    *img_courante=0;
+                }
+            }
+        }
         vaisseau->x -= vaisseau->dx;
         if(vaisseau->x < 0) {
             vaisseau->x = 0;
@@ -25,9 +52,13 @@ void deplacement_vaisseau(t_vaisseau *vaisseau, int *tir_validee, int *cptimg, i
         (*cptimg)++;
         if (*cptimg >= tmpimg) {
             *cptimg = 0;
+            if(*img_courante==0) {
+                (*img_courante)=4;
+            }
             (*img_courante)++;
+
             if (*img_courante >= (NB_SPRITES_VAISSEAU - 1)) {
-                *img_courante = 6;
+                *img_courante = (NB_SPRITES_VAISSEAU - 1);
             }
         }
         vaisseau->y += vaisseau->dy;
@@ -54,10 +85,7 @@ void deplacement_vaisseau(t_vaisseau *vaisseau, int *tir_validee, int *cptimg, i
         }
     }
 
-    // Gestion du tir
-    if(key[KEY_SPACE]) {
-        *tir_validee = 1;
-    }
+
 }
 void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir, BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION] ) {
 
@@ -72,7 +100,6 @@ void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir, BITMAP* explos
             exit(EXIT_FAILURE);
         }
     }
-    //chargement des sprites bitmap de l'explosion
     char nomfichier2[100];
     for (int i=0;i<NB_SPRITES_EXPLOSION;i++) {
         // sprintf permet de faire un printf dans une chaine
@@ -88,16 +115,26 @@ void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir, BITMAP* explos
     if (!tir->tir_bmp) {
         allegro_message("Erreur lors du chargement de tir.bmp");
     }
+//Chargement des sprites du tir special
+    char nomfichier3[100];
+    for(int i=0; i<NB_SPRITES_TIR;i++) {
+        // sprintf permet de faire un printf dans une chaine
+        sprintf(nomfichier3,"tir_special/tir_special_%d.bmp",i);
+        tir->tir_special_bmp[i] = load_bitmap(nomfichier3,NULL);
+        if(!tir->tir_special_bmp[i]) {
+            allegro_message("pas pu trouver %s",nomfichier3);
+        }
+    }
 //chargement de l'explosion du vaisseau en cas de collision (avec le decor ou un enemi)
 
     // Initialisation des donnes du vaisseau
     vaisseau->x = 100;
     vaisseau->y = SCREEN_H/2+100;
     vaisseau->dx = vaisseau->dy = 2;
-    vaisseau->etat = 0;
+    vaisseau->etat = 0;//pas encore gagné
     vaisseau->tx=50;
     vaisseau->ty = 50;
-
+    vaisseau->nb_vies=3;
 
     //tir init
     tir->dx=tir->dy=7;
@@ -105,6 +142,11 @@ void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir, BITMAP* explos
     tir->y=vaisseau->y + vaisseau->ty/2 -5;
     tir->tx=15;
     tir->ty=15;
+    // init des variables pour animation
+    tir->cptimg=0;
+    tir->tmpimg=200;
+    tir->img_courante=0;
+
 };
 int calcul_coordonees_x(int x,BITMAP* bmp) {//recoit le x du screen et le convertit au x du decor
     int nouveau_x=(x*bmp->w)/(SCREEN_W);
@@ -114,35 +156,39 @@ int  calcul_coordonees_y(int y,BITMAP* bmp) {//recoit le x du screen et le conve
     int nouveau_y=(y*bmp->h)/(SCREEN_H);
     return nouveau_y;
 };
-void explosion_animation(t_vaisseau vaisseau, int* cptimg, int* imgcourante,int tmpimg,BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION],BITMAP* buffer) { // lance l'animation de l'explosion
+int explosion_animation(t_vaisseau vaisseau, int* cptimg, int* imgcourante,int tmpimg,BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION],BITMAP* buffer) { // lance l'animation de l'explosion
+int fini=0;
     (*cptimg)++;
     if (*cptimg>=tmpimg){
-
+        *cptimg=0;
         (*imgcourante)++;
-        if (*imgcourante>=NB_SPRITES_EXPLOSION) // quand l'indice de l'image courante arrive à NIMAGE
+        if (*imgcourante>=NB_SPRITES_EXPLOSION){ // quand l'indice de l'image courante arrive à NIMAGE
             *imgcourante=0; // on recommence la séquence à partir de 0
+            fini=1;
+            }
     }
 
-    stretch_sprite(buffer,explosion_sprites[*imgcourante],vaisseau.x  ,vaisseau.y  ,explosion_sprites[*imgcourante]->w,explosion_sprites[*imgcourante]->h);
-
+    stretch_sprite(buffer,explosion_sprites[*imgcourante],vaisseau.x-10,vaisseau.y,2*explosion_sprites[*imgcourante]->w,2*explosion_sprites[*imgcourante]->h);
+return fini;
 }
-void collision_vaisseau_decor(t_vaisseau* vaisseau,BITMAP* fond_jeu_collision,  int* cptimg_ex, int tmpimg_ex,int* img_courante_ex,BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION],BITMAP* buffer) {
+void collision_vaisseau_decor(t_vaisseau* vaisseau,BITMAP* fond_jeu_collision,  int* cptimg_ex, int tmpimg_ex,int* img_courante_ex,BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION],BITMAP* buffer,int* imgcourante) {
 
 
 
     if(getpixel(fond_jeu_collision,calcul_coordonees_x(vaisseau->x,fond_jeu_collision),calcul_coordonees_y(vaisseau->y,fond_jeu_collision))==makecol(255,255,255) || getpixel(fond_jeu_collision,calcul_coordonees_x((vaisseau->x + vaisseau->tx),fond_jeu_collision),calcul_coordonees_y(vaisseau->y + vaisseau->ty,fond_jeu_collision))==makecol(255,255,255) || getpixel(fond_jeu_collision,calcul_coordonees_x(vaisseau->x + vaisseau->tx,fond_jeu_collision),calcul_coordonees_y(vaisseau->y,fond_jeu_collision))==makecol(255,255,255) || getpixel(fond_jeu_collision,calcul_coordonees_x(vaisseau->x,fond_jeu_collision),calcul_coordonees_y(vaisseau->y + vaisseau->ty,fond_jeu_collision))==makecol(255,255,255)){
-        explosion_animation(*vaisseau,cptimg_ex,img_courante_ex,tmpimg_ex,explosion_sprites,buffer);
-
+       int fini= explosion_animation(*vaisseau,cptimg_ex,img_courante_ex,tmpimg_ex,explosion_sprites,buffer);
         printf("touched\n");
         // Initialisation des donnes du vaisseau
-        if(*cptimg_ex>=tmpimg_ex) {
+        if(fini) {
+
             vaisseau->x = 100;
             vaisseau->y = SCREEN_H/2+100;
             vaisseau->dx = vaisseau->dy = 2;
             vaisseau->etat = 0;
             vaisseau->tx=50;
             vaisseau->ty = 50;
-           *cptimg_ex=0;
+            *imgcourante=0;
+
         }
 
     }

@@ -6,10 +6,11 @@
 
 void initialisation_allegro();
 
-int main(void)
-{
+int main(void) {
     initialisation_allegro();
-int tir_validee=0;
+
+
+    int tir_validee=0;
     t_vaisseau vaisseau;
     t_tir tir;
     BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION];
@@ -34,32 +35,84 @@ int tir_validee=0;
 
 
     // varibles concernatn l'animation de l'explosion
-    int cptimg_ex=0, tmpimg_ex=10;
+    int cptimg_ex=0, tmpimg_ex=4;
     int img_courante_ex=0;
 
     //
-    while (!key[KEY_ESC]) {
+    int tir_special_actif=0;
+    int cpt=0;
+int fini_spe=0;
+    int fini=0;
+
+    while (!key[KEY_ESC]) {//jeu
 
         stretch_blit(fond_jeu_normal,buffer,0,0,fond_jeu_normal->w,fond_jeu_normal->h,0,0,SCREEN_W,SCREEN_H);
         stretch_sprite(buffer,vaisseau.vaisseau_bmp[img_courante],vaisseau.x,vaisseau.y,vaisseau.tx,vaisseau.ty);
         //
         deplacement_vaisseau(&vaisseau,&tir_validee,&cptimg,&img_courante,tmpimg);
         //
-       collision_vaisseau_decor(&vaisseau,fond_jeu_collision,&cptimg_ex,tmpimg_ex,&img_courante_ex,explosion_sprites,buffer);
+        collision_vaisseau_decor(&vaisseau,fond_jeu_collision,&cptimg_ex,tmpimg_ex,&img_courante_ex,explosion_sprites,buffer,&img_courante);
+
 
         if (tir_validee) {
-            stretch_sprite(buffer,tir.tir_bmp,tir.x,tir.y,tir.tx,tir.ty);
-            tir.x+=tir.dx;
-            tir.y=vaisseau.y + vaisseau.ty/2 -5;
-            if(tir.x > SCREEN_W ) {
-               tir_validee=0;
-                tir.x = vaisseau.x + vaisseau.tx;
+            if (tir_special_actif) {
+                tir.cptimg++;
+                if(tir.cptimg>=tmpimg) {
+                    cptimg=0;
+                    tir.img_courante++;
+                    if (tir.img_courante>=NB_SPRITES_TIR-1) {
+                        tir.img_courante=NB_SPRITES_TIR-1;
+                    }
+                }
+                stretch_sprite(buffer,tir.tir_special_bmp[tir.img_courante],tir.x,tir.y,tir.tir_special_bmp[tir.img_courante]->w,tir.tir_special_bmp[tir.img_courante]->h);
+                tir.x+=tir.dx;
+
+                if(tir.x > SCREEN_W ) {
+                    tir_validee=0;
+                    tir.x = vaisseau.x + vaisseau.tx;
+                    if(tir.img_courante==NB_SPRITES_TIR-1) {
+                        fini_spe=1;
+                    }
+
+                }
+
+            }else {
+
+                stretch_sprite(buffer,tir.tir_bmp,tir.x,tir.y,tir.tx,tir.ty);
+                tir.x+=tir.dx;
+
+                if(tir.x > SCREEN_W ) {
+                    tir_validee=0;
+                    tir.x = vaisseau.x + vaisseau.tx;
+                    cpt++;
+                    if(cpt>=3) {
+                        cpt=3;
+                    }
+                }
             }
+
+
+
+
+        }
+        if(cpt==3) {
+            tir_special_actif=1;
+        }
+        if(fini_spe) {
+            cpt=0;
+            tir.img_courante=0;
+            tir_special_actif=0;
+            fini_spe=0;
+        }
+        // Si la touche espace est pressée et que le tir n'est pas validé
+        if (key[KEY_SPACE] && !tir_validee) {
+            tir_validee = 1;  // Valider le tir
+            tir.x = vaisseau.x + vaisseau.tx;  // Positionner le tir juste à droite du vaisseau
+            tir.y = vaisseau.y + vaisseau.ty / 2 - 5;  // Centrer verticalement le tir
         }
 
-
         stretch_blit(buffer,screen,0,0,buffer->w,buffer->h,0,0,SCREEN_W,560);
-        rest(16); // Pour éviter d'utiliser 100% du CPU (~60 fps)
+        rest(16);
     }
 
     // Libération de la mémoire
@@ -81,6 +134,9 @@ void initialisation_allegro(){
     allegro_init(); // appel obligatoire (var.globales, recup. infos système ...)
     install_keyboard(); //pour utiliser le clavier
     install_mouse(); //pour utiliser la souris
+    if (install_sound(DIGI_AUTODETECT,MIDI_NONE,NULL)!=0) {//initialise l utilisation du son
+        printf("N a pas pu initialise le son\n");
+    };
     //pour choisir la profondeur de couleurs (8,16,24 ou 32 bits)
     //ici: identique à celle du bureau
     set_color_depth(desktop_color_depth());
