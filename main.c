@@ -1,16 +1,29 @@
 #include <stdio.h>
 #include <allegro.h>
 #include "vaisseau.h"
-
+#include "interface.h"
 //Prototypes des SP
 
 void initialisation_allegro();
-
 int main(void) {
     initialisation_allegro();
 
+    //Pour le scroller le fond
+    int scroll_x=0;
+    int active_scroll=1;
+    //VAR de tir
+    int tir_enclenche = 0;
+    t_tir  tirs[NB_TIR];
+    t_tir tirs_speciaux[NB_TIR];
+    for (int i = 0; i < NB_TIR; i++) {
+        tirs[i].tir_actif=0;//tir desactivé au début
+    }
+    for (int i = 0; i < NB_TIR; i++) {
+        tirs_speciaux[i].tir_actif=0;//tir desactivé au début
+    }
+    //
 
-    int tir_validee=0;
+
     t_vaisseau vaisseau;
     t_tir tir;
     BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION];
@@ -36,95 +49,33 @@ int main(void) {
 
 
     // varibles concernatn l'animation de l'explosion
-    int cptimg_ex=0, tmpimg_ex=4;
+    int cptimg_ex=0, tmpimg_ex=7;
     int img_courante_ex=0;
 
-    //
-    int tir_special_actif=0;
-    int cpt=0;
-int fini_spe=0;
 
-    int son_active=1;
+
+    int son_active=0;
 
     while (!key[KEY_ESC]) {//jeu
+        if(active_scroll==1) {
+            scroll_x+=VITESSE_DE_SCROLL;
+        }
 
-        stretch_blit(fond_jeu_normal,buffer,0,0,fond_jeu_normal->w,fond_jeu_normal->h,0,0,SCREEN_W,SCREEN_H);
+        int decalge_x=scroll_x%(fond_jeu_normal->w+1);
+        stretch_blit(fond_jeu_normal,buffer,decalge_x,0,fond_jeu_normal->w,fond_jeu_normal->h,0,0,SCREEN_W,SCREEN_H);
+
         stretch_sprite(buffer,vaisseau.vaisseau_bmp[img_courante],vaisseau.x,vaisseau.y,vaisseau.tx,vaisseau.ty);
         //
         deplacement_vaisseau(&vaisseau,&cptimg,&img_courante,tmpimg);
         //
-        collision_vaisseau_decor(&vaisseau,fond_jeu_collision,&cptimg_ex,tmpimg_ex,&img_courante_ex,explosion_sprites,buffer,&img_courante);
+        gestion_score_point_vie_vaisseau(&vaisseau, collision_vaisseau_decor(&active_scroll,decalge_x,&vaisseau,fond_jeu_collision,&cptimg_ex,tmpimg_ex,&img_courante_ex,explosion_sprites,buffer,&img_courante));
+        //tir)
 
-
-        if (tir_validee) {
-            //a revoir
-            if(son_active) {
-                play_sample(tir.son_tir,255,128,1000,0); //255 est le volume, 128 panoramique, 1000 vitesse de lec du son, 0 pour jouer le son une fois ou en boucle (1)
-                son_active=0;
-            }
-
-            rest(10);
-            if (tir_special_actif) {
-                tir.cptimg++;
-                if(tir.cptimg>=tmpimg) {
-                    cptimg=0;
-                    tir.img_courante++;
-                    if (tir.img_courante>=NB_SPRITES_TIR-1) {
-                        tir.img_courante=NB_SPRITES_TIR-1;
-                    }
-                }
-                stretch_sprite(buffer,tir.tir_special_bmp[tir.img_courante],tir.x,tir.y,tir.tir_special_bmp[tir.img_courante]->w,tir.tir_special_bmp[tir.img_courante]->h);
-                tir.x+=tir.dx;
-
-                if(tir.x > SCREEN_W ) {
-                    tir_validee=0;
-                    tir.x = vaisseau.x + vaisseau.tx;
-                    if(tir.img_courante==NB_SPRITES_TIR-1) {
-                        fini_spe=1;
-                    }
-
-                }
-
-
-            }else {
-
-                stretch_sprite(buffer,tir.tir_bmp,tir.x,tir.y,tir.tx,tir.ty);
-                tir.x+=tir.dx;
-
-                if(tir.x > SCREEN_W ) {
-                    tir_validee=0;
-                    tir.x = vaisseau.x + vaisseau.tx;
-                    cpt++;
-                    if(cpt>=3) {
-                        cpt=3;
-                    }
-                }
-
-            }
-
-
-
-        }
-
-        if(cpt==3) {
-            tir_special_actif=1;
-        }
-        if(fini_spe) {
-            cpt=0;
-            tir.img_courante=0;
-            tir_special_actif=0;
-            fini_spe=0;
-        }
-        // Si la touche espace est pressée et que le tir n'est pas validé
-
-        if (key[KEY_SPACE] && !tir_validee) {
-            tir_validee = 1;  // Valider le tir
-            tir.x = vaisseau.x + vaisseau.tx;  // Positionner le tir juste à droite du vaisseau
-            tir.y = vaisseau.y + vaisseau.ty / 2 - 5;  // Centrer verticalement le tir
-            son_active=1;
-        }
+        //tir
+        tir_fonction(&son_active,tirs,tir,vaisseau,buffer,&tir_enclenche);
 
         stretch_blit(buffer,screen,0,0,buffer->w,buffer->h,0,0,SCREEN_W,560);
+        tir_enclenche = key[KEY_SPACE];
         rest(16);
     }
 
@@ -133,7 +84,6 @@ int fini_spe=0;
     remove_sound();//ferme le syst audio
     destroy_bitmap(buffer); // Libère la mémoire du buffer
     destroy_bitmap(vaisseau.vaisseau_bmp[0]);
-
 
     allegro_exit();
 
@@ -165,4 +115,3 @@ void initialisation_allegro(){
         exit(EXIT_FAILURE);
     }
 }
-
