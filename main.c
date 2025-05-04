@@ -7,7 +7,7 @@
 void initialisation_allegro();
 int main(void) {
     initialisation_allegro();
-
+printf("Bonjour\n");
     //Pour le scroller le fond
     int scroll_x=0;
     int active_scroll=1;
