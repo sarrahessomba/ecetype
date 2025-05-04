@@ -202,10 +202,7 @@ int collision_vaisseau_decor(int * active_scroll,int scroll_x,t_vaisseau* vaisse
 //reinitialise
             vaisseau->x = 100;
             vaisseau->y = SCREEN_H/2 + 70;
-            vaisseau->dx = vaisseau->dy = 2;
-            vaisseau->etat = 0;
-            vaisseau->tx=50;
-            vaisseau->ty = 50;
+
             *imgcourante=0;
             *img_courante_ex=0;
             *active_scroll=1;
