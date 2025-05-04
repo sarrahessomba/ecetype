@@ -10,8 +10,10 @@ void initialisation_allegro();
 int main(void)
 {
     initialisation_allegro();
-    printf("Test github local\n");
-    printf("Test commit");
+
+    stretch_sprite(screen,load_bitmap("Niveau 1.bmp",NULL),0,0,SCREEN_W,SCREEN_H);
+    stretch_sprite(screen,load_bitmap("enemi.bmp",NULL),50,50,90,90);
+    readkey();
     allegro_exit();
     return 0;
 }
@@ -29,7 +31,7 @@ void initialisation_allegro(){
     set_color_depth(desktop_color_depth());
     //sélection du mode graphique
     // avec choix d'un driver+mode+résolution de l'écran
-    if (set_gfx_mode(GFX_AUTODETECT_WINDOWED,800,600,0,0)!=0){
+    if (set_gfx_mode(GFX_AUTODETECT_WINDOWED,900,700,0,0)!=0){
         // Message et sortie de prog. Si échec
         allegro_message("prb gfx mode");
         allegro_exit();
