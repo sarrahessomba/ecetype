@@ -1,6 +1,8 @@
 #ifndef ENEMIES_H
 #define ENEMIES_H
 
+#include <allegro.h>
+
 typedef struct ennemi {
     int x; // Abscisse
     int y; // Ordonnée
@@ -12,6 +14,13 @@ typedef struct ennemi {
     int dmg; // Points de dégâts par tir
     int chargeur; // Nombre de balles dans un chargeur
     int reload; // Temps pour recharger un chargeur
+    BITMAP* image_ennemi_nv1; //Image de l'ennemi du premier niveau
 } ennemi;
+
+void init_ennemi_nv1(ennemi* mon_ennemi);
+void init_ennemi_nv2(ennemi* mon_ennemi);
+void init_ennemi_nv3(ennemi* mon_ennemi);
+void afficher_et_deplacer_ennemi(BITMAP* buffer, BITMAP* fond_nv1, ennemi* ennemi, int* compteur_temps, int temps_max);
+
 
 #endif //ENEMIES_H

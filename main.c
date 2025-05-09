@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <allegro.h>
-#include "vaisseau.h"
+#include "enemies.h"
+
 
 void initialisation_allegro();
 
@@ -9,12 +10,35 @@ void initialisation_allegro();
 
 int main(void)
 {
+    srand(time(NULL));
     initialisation_allegro();
+    /* Ennemis niveau 1*/
 
-    stretch_sprite(screen,load_bitmap("Niveau 1.bmp",NULL),0,0,SCREEN_W,SCREEN_H);
-    stretch_sprite(screen,load_bitmap("enemi.bmp",NULL),50,50,90,90);
-    readkey();
+    BITMAP* buffer;
+    buffer = create_bitmap(SCREEN_W,SCREEN_H);
+
+    int compteur_temps = 0;
+    int temps_max = 20;
+
+    ennemi tab_ennemi[10];
+    BITMAP*  fond_nv1 = load_bitmap("fond_nv1.bmp",NULL);
+
+    for (int i = 0; i < 10; i++) {
+        init_ennemi_nv1(&tab_ennemi[i]);
+    }
+
+    while (!key[KEY_ESC]) {
+        afficher_et_deplacer_ennemi(buffer, fond_nv1, &tab_ennemi[0], &compteur_temps, temps_max);
+
+
+        blit(buffer,screen,0,0,0,0,SCREEN_W,SCREEN_H);
+    }
+
+    /* Fin Ennemis niveau 1*/
     allegro_exit();
+
+
+
     return 0;
 }
 END_OF_MAIN();
@@ -37,4 +61,5 @@ void initialisation_allegro(){
         allegro_exit();
         exit(EXIT_FAILURE);
     }
+    show_mouse(screen);
 }
