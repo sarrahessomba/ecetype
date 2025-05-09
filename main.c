@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <allegro.h>
-#include "enemies.h"
+#include "ennemis.h"
 
 
 void initialisation_allegro();

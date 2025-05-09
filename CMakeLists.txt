@@ -8,6 +8,6 @@ add_executable(ecetype main.c
         vaisseau.h
         interface.c
         interface.h
-        enemies.c
-        enemies.h)
+        ennemis.c
+        ennemis.h)
 target_link_libraries(ecetype -lmingw32 -lalleg44)

@@ -56,4 +56,3 @@ void afficher_et_deplacer_ennemi(BITMAP* buffer, BITMAP* fond_nv1, ennemi* ennem
     }
 }
 
-
