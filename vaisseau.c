@@ -142,7 +142,7 @@ void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir, BITMAP* explos
     }
         // Initialisation des donnes du vaisseau
         vaisseau->x = 100;
-        vaisseau->y = SCREEN_H/2 +70 ;
+        vaisseau->y = SCREEN_H/2 +90 ;
         vaisseau->dx = vaisseau->dy = 2;
         vaisseau->etat = 0;//pas encore gagné
         vaisseau->tx=50;
@@ -162,14 +162,15 @@ void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir, BITMAP* explos
 
 
 };
-int calcul_coordonees_x(int scroll_x,int x,BITMAP* bmp) {//recoit le x du screen et le convertit au x du decor
-    int nouveau_x=  (scroll_x+ (x*bmp->w)/(SCREEN_W)) % bmp->w;
+int calcul_coordonees_x(int scroll_x, int x, BITMAP* bmp) {
+    int nouveau_x = scroll_x + x;
+    if (nouveau_x >= bmp->w) nouveau_x = bmp->w - 1;  // sécurité
     return nouveau_x;
 };
-int  calcul_coordonees_y(int y,BITMAP* bmp) {//recoit le x du screen et le convertit au x du decor
-    int nouveau_y=(y*bmp->h)/(SCREEN_H);
-    return nouveau_y;
-};
+int calcul_coordonees_y(int y, BITMAP* bmp) {
+    if (y >= bmp->h) y = bmp->h - 1;
+    return y;
+}
 // lANCE L'ANIMATION DE L'EXPLOSION
 int explosion_animation(t_vaisseau vaisseau, int* cptimg, int* imgcourante,int tmpimg,BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION],BITMAP* buffer) { // lance l'animation de l'explosion
 int fini=0;
@@ -201,7 +202,7 @@ int collision_vaisseau_decor(int * active_scroll,int scroll_x,t_vaisseau* vaisse
         if(fini) {
 //reinitialise
             vaisseau->x = 100;
-            vaisseau->y = SCREEN_H/2 + 70;
+            vaisseau->y = SCREEN_H/2 + 80;
             vaisseau->dx = vaisseau->dy = 2;
             vaisseau->etat = 0;
             vaisseau->tx=50;
