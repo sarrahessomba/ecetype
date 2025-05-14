@@ -1,0 +1,3 @@
+"C:\Program Files\JetBrains\CLion 2024.3.5\bin\cmake\win\x64\bin\cmake.exe" -E rm -f CMakeFiles\ecetype.dir/objects.a
+C:\MinGW\bin\ar.exe qc CMakeFiles\ecetype.dir/objects.a @CMakeFiles\ecetype.dir\objects1.rsp
+C:\MinGW\bin\gcc.exe -g -Wl,--whole-archive CMakeFiles\ecetype.dir/objects.a -Wl,--no-whole-archive -o ecetype.exe -Wl,--out-implib,libecetype.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\ecetype.dir\linkLibs.rsp
