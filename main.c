@@ -11,11 +11,12 @@ int main(void)
     BITMAP* buffer;
     buffer = create_bitmap(SCREEN_W, SCREEN_H);
     BITMAP* fond_nv1 = load_bitmap("fond_nv1.bmp", NULL);
+    BITMAP* fond_nv2 = load_bitmap("fond_nv2.bmp", NULL);
 
     /* Création et initialisation des ennemis */
     ennemi tab_ennemi[10];
     for (int i = 0; i < 10; i++) {
-        init_ennemi_nv1(&tab_ennemi[i]);
+        init_ennemi_nv2(&tab_ennemi[i]);
     }
 
     int temps_max = 2;
@@ -23,11 +24,11 @@ int main(void)
 
     while (!key[KEY_ESC]) {
         // Dessine le fond UNE FOIS par frame
-        stretch_sprite(buffer, fond_nv1, 0, 0, SCREEN_W, SCREEN_H);
+        stretch_sprite(buffer, fond_nv2, 0, 0, SCREEN_W, SCREEN_H);
 
         // Affiche les ennemis déjà activés
         for (int i = 0; i <= ennemi_courant; i++) {
-            afficher_et_deplacer_ennemi(buffer, fond_nv1, &tab_ennemi[i], temps_max);
+            afficher_et_deplacer_ennemi_nv2(buffer, fond_nv2, &tab_ennemi[i], temps_max);
         }
 
         // Active le suivant quand le précédent atteint le milieu
