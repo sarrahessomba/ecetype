@@ -1,6 +1,7 @@
 #include "ennemis.h"
 #include <stdlib.h>
 #include <allegro/datafile.h>
+#include <allegro/draw.h>
 #include <allegro/gfx.h>
 
 void init_ennemi_nv1(ennemi* mon_ennemi) {

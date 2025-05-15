@@ -9,5 +9,5 @@ add_executable(ecetype main.c
         interface.c
         interface.h
         ennemis.c
-        enemies.h)
+        ennemis.h)
 target_link_libraries(ecetype -lmingw32 -lalleg44)
