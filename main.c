@@ -12,30 +12,19 @@ int main(void)
     buffer = create_bitmap(SCREEN_W, SCREEN_H);
     BITMAP* fond_nv1 = load_bitmap("fond_nv1.bmp", NULL);
     BITMAP* fond_nv2 = load_bitmap("fond_nv2.bmp", NULL);
+    BITMAP* fond_nv3 = load_bitmap("fond_nv3.bmp", NULL);
 
     /* Création et initialisation des ennemis */
     ennemi tab_ennemi[10];
     for (int i = 0; i < 10; i++) {
-        init_ennemi_nv2(&tab_ennemi[i]);
+        init_ennemi_nv3(&tab_ennemi[i]);
     }
 
     int temps_max = 2;
-    int ennemi_courant = 0;
-
     while (!key[KEY_ESC]) {
         // Dessine le fond UNE FOIS par frame
-        stretch_sprite(buffer, fond_nv2, 0, 0, SCREEN_W, SCREEN_H);
-
-        // Affiche les ennemis déjà activés
-        for (int i = 0; i <= ennemi_courant; i++) {
-            afficher_et_deplacer_ennemi_nv2(buffer, fond_nv2, &tab_ennemi[i], temps_max);
-        }
-
-        // Active le suivant quand le précédent atteint le milieu
-        if (ennemi_courant < 9 && tab_ennemi[ennemi_courant].x == SCREEN_W / 2) {
-            ennemi_courant++;
-        }
-
+        stretch_sprite(buffer, fond_nv3, 0, 0, SCREEN_W, SCREEN_H);
+        afficher_ennemi_nv3(buffer, &tab_ennemi[0], temps_max);
         blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
     }
 

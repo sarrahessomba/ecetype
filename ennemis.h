@@ -15,13 +15,14 @@ typedef struct ennemi {
     int dmg; // Points de dégâts par tir
     int chargeur; // Nombre de balles dans un chargeur
     int reload; // Temps pour recharger un chargeur
-    BITMAP* image_ennemi_nv1; //Image de l'ennemi du premier niveau
+    BITMAP* image_ennemi; //Image de l'ennemi
 } ennemi;
 
 void init_ennemi_nv1(ennemi* mon_ennemi);
 void init_ennemi_nv2(ennemi* mon_ennemi);
+int choisir_y();
 void init_ennemi_nv3(ennemi* mon_ennemi);
 void afficher_et_deplacer_ennemi_nv1(BITMAP* buffer, BITMAP* fond_nv1, ennemi* tab_ennemis, int temps_max);
 void afficher_et_deplacer_ennemi_nv2(BITMAP* buffer, BITMAP* fond_nv2, ennemi* mon_ennemi, int temps_max);
-int choisir_y();
+void afficher_ennemi_nv3(BITMAP* buffer, ennemi* boss, int temps_max);
 #endif //ENEMIES_H
