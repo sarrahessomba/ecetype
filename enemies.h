@@ -6,7 +6,7 @@
 #define ENEMIES_H
 #include <allegro.h>
 #include "vaisseau.h"
-
+#define NB_TIR_ENNEMI 100
 typedef struct ennemi {
     int x; // Abscisse
     int y; // Ordonnée
@@ -22,13 +22,26 @@ typedef struct ennemi {
     BITMAP* image_ennemi; //Image de l'ennemi
     int ennemi_actif;//savoir s'il est mort ou pas
 } ennemi;
+typedef struct tir_ennemi {
+    int x;
+    int y;
+    int dx;
+    int dy;
+    int tx;
+    int ty;
+    int tir_actif;
+    BITMAP* image_tir;
+}tir_ennemi;
 
 void init_ennemi_nv1(ennemi* mon_ennemi);
 void init_ennemi_nv2(ennemi* mon_ennemi);
 void init_ennemi_nv3(ennemi* mon_ennemi);
 void afficher_et_deplacer_ennemi_nv1(BITMAP* buffer,  ennemi* tab_ennemis, int temps_max);
 void afficher_et_deplacer_ennemi_nv2(BITMAP* buffer,  ennemi* mon_ennemi, int temps_max);
-int collision_vaisseau_ennemis(t_vaisseau *vaisseau, ennemi *ennemi_niveau1, int *ennemi_courant, int *scroll_x) ;
+int collision_vaisseau_ennemis(t_vaisseau *vaisseau, ennemi *ennemi_niveau1, int *ennemi_courant, int *active_scroll) ;
 int choisir_y();
 int collision_tir_ennemi (ennemi* ennemi,t_tir* tir);
+void init_tir(tir_ennemi* tir_ennemi,ennemi ennemi_niveau,BITMAP* image_tir_ennemi) ;
+void tir_ennemi_niveau2(tir_ennemi tir_ennemi[NB_TIR_ENNEMI],ennemi* ennemi_niveau2,BITMAP* buffer);
+void afficher_ennemi_nv3(BITMAP* buffer, ennemi* boss, int temps_max);
 #endif //ENEMIES_H

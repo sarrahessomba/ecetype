@@ -7,34 +7,6 @@
 
 void initialisation_allegro();
 
-void transition_crossfade(BITMAP* from, BITMAP* to, int speed_ms) {
-    BITMAP* buffer = create_bitmap(SCREEN_W, SCREEN_H);
-    BITMAP* img1 = create_bitmap(SCREEN_W, SCREEN_H);
-    BITMAP* img2 = create_bitmap(SCREEN_W, SCREEN_H);
-
-    stretch_blit(from, img1, 0, 0, from->w, from->h, 0, 0, SCREEN_W, SCREEN_H);
-    stretch_blit(to, img2, 0, 0, to->w, to->h, 0, 0, SCREEN_W, SCREEN_H);
-
-    for (int alpha = 0; alpha <= 255; alpha += 5) {
-        clear_to_color(buffer, makecol(0, 0, 0));
-
-        // Affiche image1 avec opacité dégressive
-        set_trans_blender(0, 0, 0, 255 - alpha);
-        draw_trans_sprite(buffer, img1, 0, 0);
-
-        // Affiche image2 avec opacité croissante
-        set_trans_blender(0, 0, 0, alpha);
-        draw_trans_sprite(buffer, img2, 0, 0);
-
-        blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-        rest(speed_ms);
-    }
-
-    destroy_bitmap(buffer);
-    destroy_bitmap(img1);
-    destroy_bitmap(img2);
-}
-
 int main(void) {
 
     initialisation_allegro();// initialisation des paramètres allegro
@@ -116,16 +88,30 @@ int main(void) {
         init_ennemi_nv1(&ennemi_niveau1[i]);
     }
     ennemi ennemi_niveau2[10];
+    tir_ennemi tirs_ennemi[NB_TIR_ENNEMI] ;
+    BITMAP* image_tir_ennemi=load_bitmap("tir_ennemi.bmp", NULL);
     for (int i = 0; i < 10; i++) {
         init_ennemi_nv2(&ennemi_niveau2[i]);
+        for (int j = 0; j < NB_TIR_ENNEMI; j++) {
+            init_tir(&tirs_ennemi[j],ennemi_niveau2[i],image_tir_ennemi);
+        }
     }
+
+
+
    ennemi boss;
+    init_ennemi_nv3(&boss);
     int temps_max = 1;
     int ennemi_courant = 0;
     int ennemi_courant_2 = 0;
+    int ennemi_courant_3 = 0;
+    int ennemi_courant_4 = 0;
     //variables pour niveau
     int fin_nv1=1730;
     int fin_nv2=3467;
+    int fin_nv3=5202 ;
+    //tir
+
 
 
 /*************************************************************************   VARIABLES   *********************************************************************/
@@ -180,6 +166,7 @@ int main(void) {
                 int reste = fond_jeu->w - offset;
                 blit(fond_jeu, buffer, 0, 0, reste, 0, SCREEN_W - reste, SCREEN_H);
             }
+            //niveau1
             if(scroll_x>=0 && scroll_x<=fin_nv1 ) {
                 for(int i=0;i<= ennemi_courant;i++) {
                     if(ennemi_niveau1[i].ennemi_actif) {
@@ -195,8 +182,55 @@ int main(void) {
                     if (ennemi_courant < 9 && ennemi_niveau1[ennemi_courant].x == SCREEN_W / 2) {
                         ennemi_courant++;
                     }
+                //niveau2
             }else if(scroll_x>fin_nv1 && scroll_x<=fin_nv2) {
+                for (int i = 0; i < 10; i++) {
+                    ennemi_niveau1[i].x = SCREEN_W+10;
+                    ennemi_niveau1[i].y = rand() % (408-50 - 115 + 1) + 115;
+                }
                 for(int i=0;i<= ennemi_courant_2;i++) {
+                    if(ennemi_niveau2[i].ennemi_actif) {
+                        afficher_et_deplacer_ennemi_nv2(buffer,&ennemi_niveau2[i],temps_max);
+                        ennemi_niveau2[(i+1)%10].x=ennemi_niveau2[i].x +100;
+                        tir_ennemi_niveau2(tirs_ennemi,&ennemi_niveau2[i],buffer);
+                    }
+                }
+                //TIR VAISSEAU SUR ENNEMI
+
+                // COLLISION AVEC ENNNEMI
+
+                // Active le suivant quand le précédent atteint le milieu
+                if (ennemi_courant_2 < 9 ) {
+                    ennemi_courant_2++;
+                }
+
+                // Activer le suivant si le dernier actif a atteint le milieu de l'écran
+                if (ennemi_courant_2 < 9) {
+                    if (ennemi_niveau2[ennemi_courant_2].x < SCREEN_W / 2) {
+                        ennemi_courant_2++;
+                        ennemi_niveau2[ennemi_courant_2].ennemi_actif = 1;
+                    }
+                }
+
+
+            //niveau3
+            }else if(scroll_x>fin_nv2 && scroll_x<=fin_nv3) {
+
+               /* for(int i=0;i<= ennemi_courant_3;i++) {
+                    if(ennemi_niveau1[i].ennemi_actif) {
+                        afficher_et_deplacer_ennemi_nv1(buffer,&ennemi_niveau1[i],temps_max);
+                    }
+
+                }
+                //TIR VAISSEAU SUR ENNEMI
+
+                // COLLISION AVEC ENNNEMI
+
+                // Active le suivant quand le précédent atteint le milieu
+                if (ennemi_courant_3 < 9 && ennemi_niveau1[ennemi_courant_3].x == SCREEN_W / 2) {
+                    ennemi_courant_3++;
+                }*/
+                for(int i=0;i<= ennemi_courant_4;i++) {
                     if(ennemi_niveau2[i].ennemi_actif) {
                         afficher_et_deplacer_ennemi_nv2(buffer,&ennemi_niveau2[i],temps_max);
                         ennemi_niveau2[(i+1)%10].x=ennemi_niveau2[i].x +100;
@@ -208,15 +242,20 @@ int main(void) {
                 // COLLISION AVEC ENNNEMI
 
                 // Active le suivant quand le précédent atteint le milieu
-                if (ennemi_courant_2 < 9 ) {
-                    ennemi_courant_2++;
+                if (ennemi_courant_4 < 9 ) {
+                    ennemi_courant_4++;
                 }
+
+            }else if(scroll_x>fin_nv3) {
+                scroll_x=fin_nv3+1;
+                active_scroll=0;
+                afficher_ennemi_nv3(buffer,&boss,temps_max);
 
             }
 
             stretch_sprite(buffer,vaisseau.vaisseau_bmp[img_courante],vaisseau.x,vaisseau.y,vaisseau.tx,vaisseau.ty);
             deplacement_vaisseau(&vaisseau,&cptimg,&img_courante,tmpimg);
-            gestion_score_point_vie_vaisseau(&vaisseau,collision_vaisseau_decor(&active_scroll,scroll_x,&vaisseau,fond_collision,&cptimg_ex,tmpimg_ex,&img_courante_ex,explosion_sprites,buffer,&img_courante),collision_vaisseau_ennemis(&vaisseau,ennemi_niveau1,&ennemi_courant,&scroll_x));
+            gestion_score_point_vie_vaisseau(&vaisseau,collision_vaisseau_decor(&active_scroll,scroll_x,&vaisseau,fond_collision,&cptimg_ex,tmpimg_ex,&img_courante_ex,explosion_sprites,buffer,&img_courante),collision_vaisseau_ennemis(&vaisseau,ennemi_niveau1,&ennemi_courant,&active_scroll));
             //tir
             tir_fonction(&son_active,tirs,tir,vaisseau,buffer,&tir_enclenche);
 
@@ -241,6 +280,13 @@ int main(void) {
         for (int i = 0; i < 10; i++) {
             destroy_bitmap(ennemi_niveau1[i].image_ennemi);
         }
+    for(int i=0;i<10;i++) {
+        destroy_bitmap(ennemi_niveau2[i].image_ennemi);
+    }
+    destroy_bitmap(boss.image_ennemi);
+    for(int i=0; i<NB_TIR_ENNEMI; i++) {
+        destroy_bitmap(tirs_ennemi[i].image_tir);
+    }
 
 
         for (int i = 0; i < NB_SPRITES_VAISSEAU; i++) {

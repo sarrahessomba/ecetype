@@ -133,9 +133,9 @@ void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir, BITMAP* explos
         }
     }*/
 
-    for(int i=0;i<NB_TIR;i++) {
+
         tir->tir_bmp=load_bitmap("tir.bmp", NULL);
-    }
+
     //Chargement du son du tir
     tir->son_tir=load_sample("son_tir.wav");
     if (!tir->son_tir) {
@@ -204,8 +204,6 @@ int collision_vaisseau_decor(int * active_scroll,int scroll_x,t_vaisseau* vaisse
 //reinitialise
             vaisseau->x = 100;
             vaisseau->y = SCREEN_H/2 + 80;
-            vaisseau->dx = vaisseau->dy = 2;
-            vaisseau->etat = 0;
             *imgcourante=0;
             *img_courante_ex=0;
             *active_scroll=1;
