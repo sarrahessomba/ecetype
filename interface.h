@@ -11,8 +11,10 @@ typedef struct {//structures pour les boutons reprendre, nouvelle partie et quit
 } Bouton;
 
 //sous programmes
+
 int souris_sur_bouton(Bouton b, int mx, int my);// pour comparer la position des bouto par rapport au menu
 void afficher_menu(BITMAP *fond, BITMAP *buffer);// pour afficher le menu
 void saisir_pseudo(char *pseudo, int max, BITMAP* buffer, BITMAP* zone_nom) ;//pour saisir le pseudo
+void pause(BITMAP *pause_img, BITMAP *buffer_P);
 
 #endif //INTERFACE_H

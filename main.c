@@ -2,6 +2,7 @@
 #include <allegro.h>
 #include "vaisseau.h"
 #include "interface.h"
+#include "enemies.h"
 //Prototypes des SP
 
 void initialisation_allegro();
@@ -33,7 +34,9 @@ void transition_crossfade(BITMAP* from, BITMAP* to, int speed_ms) {
     destroy_bitmap(img1);
     destroy_bitmap(img2);
 }
+
 int main(void) {
+
     initialisation_allegro();// initialisation des paramètres allegro
     //Pour le scroller le fond
     /*************************************************************************   VARIABLES   *********************************************************************/
@@ -42,13 +45,10 @@ int main(void) {
     //VAR de tir
     int tir_enclenche = 0;
     t_tir  tirs[NB_TIR];
-    t_tir tirs_speciaux[NB_TIR];
     for (int i = 0; i < NB_TIR; i++) {
         tirs[i].tir_actif=0;//tir desactivé au début
     }
-    for (int i = 0; i < NB_TIR; i++) {
-        tirs_speciaux[i].tir_actif=0;//tir desactivé au début
-    }
+
     //varaibles pour le vaisseau
     t_vaisseau vaisseau;
     t_tir tir;
@@ -105,8 +105,28 @@ int main(void) {
     BITMAP *buffer_menu = create_bitmap(SCREEN_W, SCREEN_H);
     BITMAP* buffer_P=create_bitmap(SCREEN_W,SCREEN_H);
     //initialisation des position des boutons
+
     Bouton btn_nouvelle  = {200, 250, 300, 60};
     Bouton btn_reprendre = {200, 310, 300, 60};
+
+    //Ennemies
+    ennemi ennemi_niveau1[10];
+        //
+    for (int i = 0; i < 10; i++) {
+        init_ennemi_nv1(&ennemi_niveau1[i]);
+    }
+    ennemi ennemi_niveau2[10];
+    for (int i = 0; i < 10; i++) {
+        init_ennemi_nv2(&ennemi_niveau2[i]);
+    }
+   ennemi boss;
+    int temps_max = 1;
+    int ennemi_courant = 0;
+    int ennemi_courant_2 = 0;
+    //variables pour niveau
+    int fin_nv1=1730;
+    int fin_nv2=3467;
+
 
 /*************************************************************************   VARIABLES   *********************************************************************/
 
@@ -133,33 +153,12 @@ int main(void) {
 
         rest(10);
     }
-int pause_active=0;
+
 
     while (!key[KEY_ESC]) {
-        if(key[KEY_P]) {
-            pause_active=1;
-            while(key[KEY_P]) {
-                rest(10);
-            }
-
-        }
-        while(pause_active) {
-
-            clear_bitmap(buffer_P);
-            stretch_blit(pause_img,buffer_P,0,0,pause_img->w,pause_img->h,0,0,SCREEN_W,SCREEN_H);
-            blit(buffer_P,screen,0,0,0,0,SCREEN_W,SCREEN_H);
-            rest(10);
-            if(key[KEY_P ] ) {
-                pause_active=0;
-                while(key[KEY_P]) {//attendre que KEY_P soit relaché
-                    rest(10);
-                }
-            }
-            if(key[KEY_ESC]) {
-                break;
-            }
-
-        }
+       if(key[KEY_P]) {
+           pause(pause_img,buffer_P);
+       }
         if(!fin) {
             if(active_scroll==1) {
                 scroll_x += VITESSE_DE_SCROLL;
@@ -168,7 +167,10 @@ int pause_active=0;
                     fin=1;
                 }
             }
+
+
             int offset = scroll_x % fond_jeu->w;
+
 
             // Affiche la partie droite du fond
             blit(fond_jeu, buffer, offset, 0, 0, 0, SCREEN_W, SCREEN_H);
@@ -178,13 +180,46 @@ int pause_active=0;
                 int reste = fond_jeu->w - offset;
                 blit(fond_jeu, buffer, 0, 0, reste, 0, SCREEN_W - reste, SCREEN_H);
             }
+            if(scroll_x>=0 && scroll_x<=fin_nv1 ) {
+                for(int i=0;i<= ennemi_courant;i++) {
+                    if(ennemi_niveau1[i].ennemi_actif) {
+                        afficher_et_deplacer_ennemi_nv1(buffer,&ennemi_niveau1[i],temps_max);
+                    }
+
+                }
+                //TIR VAISSEAU SUR ENNEMI
+
+                // COLLISION AVEC ENNNEMI
+
+                    // Active le suivant quand le précédent atteint le milieu
+                    if (ennemi_courant < 9 && ennemi_niveau1[ennemi_courant].x == SCREEN_W / 2) {
+                        ennemi_courant++;
+                    }
+            }else if(scroll_x>fin_nv1 && scroll_x<=fin_nv2) {
+                for(int i=0;i<= ennemi_courant_2;i++) {
+                    if(ennemi_niveau2[i].ennemi_actif) {
+                        afficher_et_deplacer_ennemi_nv2(buffer,&ennemi_niveau2[i],temps_max);
+                        ennemi_niveau2[(i+1)%10].x=ennemi_niveau2[i].x +100;
+                    }
+
+                }
+                //TIR VAISSEAU SUR ENNEMI
+
+                // COLLISION AVEC ENNNEMI
+
+                // Active le suivant quand le précédent atteint le milieu
+                if (ennemi_courant_2 < 9 ) {
+                    ennemi_courant_2++;
+                }
+
+            }
 
             stretch_sprite(buffer,vaisseau.vaisseau_bmp[img_courante],vaisseau.x,vaisseau.y,vaisseau.tx,vaisseau.ty);
             deplacement_vaisseau(&vaisseau,&cptimg,&img_courante,tmpimg);
-            gestion_score_point_vie_vaisseau(&vaisseau,collision_vaisseau_decor(&active_scroll,scroll_x,&vaisseau,fond_collision,&cptimg_ex,tmpimg_ex,&img_courante_ex,explosion_sprites,buffer,&img_courante));
-
+            gestion_score_point_vie_vaisseau(&vaisseau,collision_vaisseau_decor(&active_scroll,scroll_x,&vaisseau,fond_collision,&cptimg_ex,tmpimg_ex,&img_courante_ex,explosion_sprites,buffer,&img_courante),collision_vaisseau_ennemis(&vaisseau,ennemi_niveau1,&ennemi_courant,&scroll_x));
             //tir
             tir_fonction(&son_active,tirs,tir,vaisseau,buffer,&tir_enclenche);
+
 
             blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
             tir_enclenche = key[KEY_SPACE];
@@ -196,21 +231,23 @@ int pause_active=0;
         // Libération de la mémoire
         destroy_sample(tir.son_tir);
         remove_sound();//ferme le syst audio
-        destroy_bitmap(buffer); // Libère la mémoire du buffer
-        destroy_bitmap(vaisseau.vaisseau_bmp[0]);
-    destroy_bitmap(fond_menu);
+        destroy_bitmap(fond_menu);
+        destroy_bitmap(pause_img);
         destroy_bitmap(fond_jeu);
         destroy_bitmap(fond_collision);
+        destroy_bitmap(buffer); // Libère la mémoire du buffer
+        destroy_bitmap(buffer_menu);
+        destroy_bitmap(buffer_P);
+        for (int i = 0; i < 10; i++) {
+            destroy_bitmap(ennemi_niveau1[i].image_ennemi);
+        }
+
 
         for (int i = 0; i < NB_SPRITES_VAISSEAU; i++) {
             destroy_bitmap(vaisseau.vaisseau_bmp[i]);
         }
     blit(fond_jeu, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-    readkey();
 
-    transition_crossfade(fond_jeu, fond_transition, 10);
-
-    readkey();
         allegro_exit();
 
         return 0;

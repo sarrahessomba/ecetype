@@ -50,3 +50,31 @@ void saisir_pseudo(char *pseudo, int max, BITMAP* buffer,BITMAP* zone_nom) {
         rest(10);
     }
 }
+void pause(BITMAP *pause_img, BITMAP *buffer_P) {
+    int pause_active = 1;
+
+    // Attendre le relâchement de la touche P pour éviter double-déclenchement
+    while (key[KEY_P]) {
+        rest(10);
+    }
+
+    while (pause_active) {
+        clear_bitmap(buffer_P);
+        stretch_blit(pause_img, buffer_P, 0, 0, pause_img->w, pause_img->h, 0, 0, SCREEN_W, SCREEN_H);
+        blit(buffer_P, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        rest(10);
+
+        // on retourne au jeu
+        if (key[KEY_P]) {
+            pause_active = 0;
+            while (key[KEY_P]) {
+                rest(10);
+            }
+        }
+
+        // Sortir en appuyant sur ECHAP
+        if (key[KEY_ESC]) {
+            break;
+        }
+    }
+}

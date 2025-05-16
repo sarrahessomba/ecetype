@@ -5,6 +5,7 @@
 #include "vaisseau.h"
 //sous programmes concernat le vaisseau
 #include <stdio.h>
+#include "enemies.h"
 
 //PERMET DE GERER LE DEPLACEMENT DU VAISSEAU AINSI QUE LES SPRITES CONCERNES
 void deplacement_vaisseau(t_vaisseau *vaisseau, int *cptimg, int *img_courante, int tmpimg) {
@@ -121,7 +122,7 @@ void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir, BITMAP* explos
     if (!tir->tir_bmp) {
         allegro_message("Erreur lors du chargement de tir.bmp");
     }*/
-    //Chargement des sprites du tir special
+   /* //Chargement des sprites du tir special
     char nomfichier3[100];
     for(int i=0; i<NB_SPRITES_TIR;i++) {
         // sprintf permet de faire un printf dans une chaine
@@ -130,7 +131,7 @@ void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir, BITMAP* explos
         if(!tir->tir_special_bmp[i]) {
             allegro_message("pas pu trouver %s",nomfichier3);
         }
-    }
+    }*/
 
     for(int i=0;i<NB_TIR;i++) {
         tir->tir_bmp=load_bitmap("tir.bmp", NULL);
@@ -205,8 +206,6 @@ int collision_vaisseau_decor(int * active_scroll,int scroll_x,t_vaisseau* vaisse
             vaisseau->y = SCREEN_H/2 + 80;
             vaisseau->dx = vaisseau->dy = 2;
             vaisseau->etat = 0;
-            vaisseau->tx=50;
-            vaisseau->ty = 50;
             *imgcourante=0;
             *img_courante_ex=0;
             *active_scroll=1;
@@ -243,6 +242,7 @@ void tir_fonction(int *son_active,t_tir tirs[NB_TIR],t_tir tir,t_vaisseau vaisse
             if (tirs[i].x > SCREEN_W) {
                 tirs[i].tir_actif = 0;
             }
+
         }
     }
     for (int i = 0; i < NB_TIR; i++) {
@@ -251,8 +251,8 @@ void tir_fonction(int *son_active,t_tir tirs[NB_TIR],t_tir tir,t_vaisseau vaisse
         }
     }
 }
-void gestion_score_point_vie_vaisseau(t_vaisseau* vaisseau,int collision_eu) {
-    if(collision_eu) {
+void gestion_score_point_vie_vaisseau(t_vaisseau* vaisseau,int collision_eu_decor, int collision_eu_ennemi_1) {
+    if(collision_eu_decor || collision_eu_ennemi_1) {
         vaisseau->nb_vies--;
     }
     printf("%d\n",vaisseau->nb_vies);
