@@ -118,14 +118,7 @@ int collision_vaisseau_ennemis(t_vaisseau *vaisseau, ennemi *ennemi_niveau1, int
     return collision_eu;
 }
 
-int collision_tir_ennemi (ennemi* ennemi,t_tir* tir) {
-    if (tir->x <= ennemi->x + ennemi->taille_x  &&  ennemi->x <= tir->x + tir->tx  && tir->y <= ennemi->y + ennemi->taille_y  &&  ennemi->y <= tir->y + tir->ty ) {
 
-        printf("touchee_tir\n");
-        return 1;
-    }
-    return 0;
-}
 
 //void tir_ennemi_nv2
 void init_tir(tir_ennemi* tir_ennemi,ennemi ennemi_niveau,BITMAP* image_tir_ennemi) {
@@ -166,6 +159,34 @@ void tir_ennemi_niveau2(tir_ennemi tir_ennemi[NB_TIR_ENNEMI],ennemi* ennemi_nive
         }
     }
 }
+void collision_tir_ennemi(t_tir tirs[NB_TIR], ennemi ennemis[], int nb_ennemis) {
+    for (int i = 0; i < NB_TIR; i++) {
+        if (tirs[i].tir_actif) {
+            for (int j = 0; j < nb_ennemis; j++) {
+                if (ennemis[j].ennemi_actif) {
+                    // Détection collision AABB (rectangle vs rectangle)
+                    if (tirs[i].x < ennemis[j].x + ennemis[j].taille_x &&
+                        tirs[i].x + tirs[i].tx > ennemis[j].x &&
+                        tirs[i].y < ennemis[j].y + ennemis[j].taille_y &&
+                        tirs[i].y + tirs[i].ty > ennemis[j].y) {
+
+                        // Collision détectée
+                        tirs[i].tir_actif = 0;
+                        ennemis[j].pv -= 1; // Ici on enlève 1 PV, adapte selon ta logique
+
+                        if (ennemis[j].pv <= 0) {
+                            ennemis[j].ennemi_actif = 0;
+                            // Optionnel : jouer une animation d'explosion, son, etc.
+                        }
+
+                        break; // On arrête de vérifier ce tir car il a déjà touché un ennemi
+                        }
+                }
+            }
+        }
+    }
+}
+
 
 int choisir_y() {
     int r = rand() % 2;

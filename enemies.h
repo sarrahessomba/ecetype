@@ -40,7 +40,7 @@ void afficher_et_deplacer_ennemi_nv1(BITMAP* buffer,  ennemi* tab_ennemis, int t
 void afficher_et_deplacer_ennemi_nv2(BITMAP* buffer,  ennemi* mon_ennemi, int temps_max);
 int collision_vaisseau_ennemis(t_vaisseau *vaisseau, ennemi *ennemi_niveau1, int *ennemi_courant, int *active_scroll) ;
 int choisir_y();
-int collision_tir_ennemi (ennemi* ennemi,t_tir* tir);
+void collision_tir_ennemi(t_tir tirs[NB_TIR], ennemi ennemis[], int nb_ennemis);
 void init_tir(tir_ennemi* tir_ennemi,ennemi ennemi_niveau,BITMAP* image_tir_ennemi) ;
 void tir_ennemi_niveau2(tir_ennemi tir_ennemi[NB_TIR_ENNEMI],ennemi* ennemi_niveau2,BITMAP* buffer);
 void afficher_ennemi_nv3(BITMAP* buffer, ennemi* boss, int temps_max);

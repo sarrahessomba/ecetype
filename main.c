@@ -175,7 +175,7 @@ int main(void) {
 
                 }
                 //TIR VAISSEAU SUR ENNEMI
-
+                collision_tir_ennemi(tirs,ennemi_niveau1,10);
                 // COLLISION AVEC ENNNEMI
 
                     // Active le suivant quand le précédent atteint le milieu
