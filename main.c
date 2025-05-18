@@ -105,6 +105,7 @@ int main(void) {
     //chargement partie
     int partie_charge=0;//partie pas charge
     int scroll_x_partie_charge=0;
+    t_vaisseau vaisseau_chargee;
 
 
 
@@ -126,7 +127,7 @@ int main(void) {
                 break;
             }
             if (souris_sur_bouton(btn_reprendre, mx, my)) {
-                charger_partie(&scroll_x_partie_charge,&vaisseau,pseudo);
+                charger_partie(&scroll_x_partie_charge,&vaisseau_chargee,pseudo);
                 partie_charge=1;
                 allegro_message("Reprendre la partie !");
                 break;
@@ -178,6 +179,10 @@ if(partie_charge==0) {
     }else if(scroll_x>fin_nv3) {
         scroll_x=fin_nv3+1;
     }
+    vaisseau.nb_vies=vaisseau_chargee.nb_vies;
+    vaisseau.point=vaisseau_chargee.point;
+    vaisseau.score=vaisseau_chargee.score;
+
     partie_charge=0;
 }
     int active_scroll=1;
