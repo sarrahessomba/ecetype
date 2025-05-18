@@ -43,11 +43,10 @@ typedef struct tir {
 }t_tir;
 //sous programmes
 void deplacement_vaisseau(t_vaisseau *vaisseau, int *cptimg, int *img_courante, int tmpimg);
-
+void tir_fonction(int *son_active,t_tir tirs[NB_TIR],t_tir tir,t_vaisseau vaisseau,BITMAP* buffer,int* tir_enclenche) ;
 void initialisation_vaisseau_tir(t_vaisseau* vaisseau,t_tir* tir,BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION]);
 
 int collision_vaisseau_decor(int* active_scroll,int scroll_x,t_vaisseau* vaisseau,BITMAP* fond_jeu_collision,  int* cptimg_ex, int tmpimg_ex,int* img_courante_ex,BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION],BITMAP* buffer,int* imgcourante);
-void tir_fonction(int *son_active,t_tir tirs[NB_TIR],t_tir tir,t_vaisseau vaisseau,BITMAP* buffer,int* tir_enclenche);
-void gestion_score_point_vie_vaisseau(t_vaisseau* vaisseau,int collision_eu_decor, int collision_eu_ennemi) ;
+void gestion_score_point_vie_vaisseau(t_vaisseau* vaisseau,int collision_eu_decor, int collision_eu_ennemi1, int collision_eu_ennemi2);
 int explosion_animation(t_vaisseau vaisseau, int* cptimg, int* imgcourante,int tmpimg,BITMAP* explosion_sprites[NB_SPRITES_EXPLOSION],BITMAP* buffer) ; // lance l'animation de l'explosion
 #endif //VAISSEAU_H
